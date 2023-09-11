@@ -20,6 +20,8 @@ import { User } from "@clerk/nextjs/server"
 import { Textarea } from "@/components/ui/textarea"
 import { isBase64Image } from "@/lib/utils"
 import { useUploadThing } from "@/lib/uploadthing"
+import { updateUser } from "@/lib/actions/user.actions"
+import { usePathname, useRouter } from "next/navigation"
 
 interface AccountProfileProps {
   user: User | null
@@ -31,6 +33,8 @@ const AccountProfile: React.FC<AccountProfileProps> = ({ user, btnTitle }) => {
   const [files, setFiles] = useState<File[]>([]) //?
   const { startUpload } = useUploadThing("media")
   const fileReader = new FileReader()
+  const router = useRouter()
+  const pathname = usePathname()
 
   const form = useForm({
     resolver: zodResolver(UserValidation),
@@ -39,6 +43,7 @@ const AccountProfile: React.FC<AccountProfileProps> = ({ user, btnTitle }) => {
       name: user?.firstName || "",
       username: user?.username || "",
       bio: "",
+      id: user?.id || "",
     },
   })
 
@@ -72,7 +77,19 @@ const AccountProfile: React.FC<AccountProfileProps> = ({ user, btnTitle }) => {
       }
     }
 
-    // TODO: Update user profile
+    await updateUser({
+      username: values.username,
+      name: values.name,
+      bio: values.bio,
+      image: values.profile_photo,
+      userId: user?.id || "",
+      path: pathname,
+    })
+    if (pathname === "/profile/edit") {
+      router.back()
+    } else {
+      router.push("/")
+    }
   }
 
   return (
@@ -176,7 +193,10 @@ const AccountProfile: React.FC<AccountProfileProps> = ({ user, btnTitle }) => {
           )}
         />
 
-        <Button type='submit' className='bg-primary-500 w-full'>
+        <Button
+          onClick={() => onSubmit}
+          type='submit'
+          className='bg-primary-500 w-full'>
           {btnTitle}
         </Button>
       </form>

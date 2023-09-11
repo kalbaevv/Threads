@@ -1,5 +1,6 @@
-import * as z from "zod";
+import * as z from "zod"
 export const UserValidation = z.object({
+  id: z.string().nonempty(),
   profile_photo: z.string().url().nonempty(),
   name: z
     .string()
@@ -13,4 +14,4 @@ export const UserValidation = z.object({
     .string()
     .min(3, { message: "minimum 3 letters!" })
     .max(500, { message: "maximum 500 letters!" }),
-});
+})

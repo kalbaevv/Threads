@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema({
   id: { type: String, required: true },
   usermame: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  Image: String,
+  image: String,
   bio: String,
   threads: [
     {
@@ -23,3 +23,7 @@ const UserSchema = new mongoose.Schema({
     },
   ],
 })
+
+const User = mongoose.models.User || mongoose.model("User", UserSchema)
+
+export default User
